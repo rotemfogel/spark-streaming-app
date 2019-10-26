@@ -3,7 +3,6 @@ package me.rotemfo.sparkstreaming
 import java.util.regex.Pattern
 
 import com.typesafe.config.ConfigFactory
-import org.apache.log4j.{Level, Logger}
 
 /**
  * project: spark-streaming-app
@@ -14,13 +13,8 @@ import org.apache.log4j.{Level, Logger}
  */
 
 object Utilities {
-  /** Makes sure only ERROR messages get logged to avoid log spam. */
-  def setupLogging(): Unit = {
-    val rootLogger = Logger.getRootLogger()
-    rootLogger.setLevel(Level.ERROR)
-  }
 
-  private final val twitterConf = ConfigFactory.load().getConfig("twitter")
+  private final lazy val twitterConf = ConfigFactory.load().getConfig("twitter")
   /** Configures Twitter service credentials using twiter.txt in the main workspace directory */
   def setupTwitter(): Unit = {
     val iter = twitterConf.entrySet().iterator()

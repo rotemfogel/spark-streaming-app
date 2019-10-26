@@ -1,8 +1,9 @@
 package me.rotemfo.sparkstreaming
 
-import Utilities._
+import me.rotemfo.sparkstreaming.Utilities._
 import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
+
 /**
  * project: spark-streaming-app
  * package: me.rotemfo.sparkstreaming
@@ -23,14 +24,11 @@ object PrintTweets {
     // all CPU cores and one-second batches of data
     val ssc = new StreamingContext("local[*]", "PrintTweets", Seconds(1))
 
-    // Get rid of log spam (should be called after the context is set up)
-    setupLogging()
-
     // Create a DStream from Twitter using our streaming context
     val tweets = TwitterUtils.createStream(ssc, None)
 
     // Now extract the text of each status update into RDD's using map()
-    val statuses = tweets.map(status => status.getText())
+    val statuses = tweets.map(_.getText())
 
     // Print out the first ten
     statuses.print()

@@ -53,10 +53,9 @@ class TwitterInputDStream(ssc_ : StreamingContext,
 }
 
 private[streaming]
-class TwitterReceiver(
-                       twitterAuth: Authorization,
-                       filters: Seq[String],
-                       storageLevel: StorageLevel
+class TwitterReceiver(twitterAuth: Authorization,
+                      filters: Seq[String],
+                      storageLevel: StorageLevel
                      ) extends Receiver[Status](storageLevel) with Logging {
 
   @volatile private var twitterStream: TwitterStream = _
@@ -87,7 +86,7 @@ class TwitterReceiver(
       })
 
       val query = new FilterQuery
-      if (filters.size > 0) {
+      if (filters.nonEmpty) {
         query.track(filters.mkString(","))
         newTwitterStream.filter(query)
       } else {
@@ -107,7 +106,7 @@ class TwitterReceiver(
     logInfo("Twitter receiver stopped")
   }
 
-  private def setTwitterStream(newTwitterStream: TwitterStream) = synchronized {
+  private def setTwitterStream(newTwitterStream: TwitterStream): Unit = synchronized {
     if (twitterStream != null) {
       twitterStream.shutdown()
     }
