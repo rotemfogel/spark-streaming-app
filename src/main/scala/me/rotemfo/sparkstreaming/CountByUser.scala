@@ -1,7 +1,7 @@
 package me.rotemfo.sparkstreaming
 
-import me.rotemfo.sparkstreaming.Utilities._
-import org.apache.spark.streaming.dstream.{DStream, ReceiverInputDStream}
+import org.apache.spark.streaming.Minutes
+import org.apache.spark.streaming.dstream.ReceiverInputDStream
 import org.apache.spark.streaming.twitter.TwitterUtils
 import twitter4j.Status
 
@@ -13,13 +13,10 @@ import twitter4j.Status
  * author:  Rotem
  */
 /** Simple application to listen to a stream of Tweets and print them out */
-object PrintTweets extends BaseTwitterApp {
+object CountByUser extends BaseTwitterApp {
 
   /** Our main function where the action happens */
   def main(args: Array[String]) {
-
-    // Configure Twitter credentials using twitter.txt
-    setupTwitter()
 
     // Set up a Spark streaming context named "PrintTweets" that runs locally using
     // all CPU cores and one-second batches of data
@@ -29,11 +26,9 @@ object PrintTweets extends BaseTwitterApp {
     // Create a DStream from Twitter using our streaming context
     val tweets: ReceiverInputDStream[Status] = TwitterUtils.createStream(ssc, None)
 
-    // Now extract the text of each status update into RDD's using map()
-    val statuses: DStream[String] = tweets.map(_.getText())
+    val totalByUser = tweets.map(_.getUser.getId).countByValueAndWindow(Minutes(1), Minutes(1))
 
-    // Print out the first ten
-    statuses.print()
+    totalByUser.print()
 
     // Kick it all off
     ssc.start()
