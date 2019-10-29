@@ -1,8 +1,9 @@
 package me.rotemfo.sparkstreaming
 
-import org.apache.spark.streaming.Minutes
+import org.apache.spark.streaming.Seconds
 import org.apache.spark.streaming.dstream.ReceiverInputDStream
 import org.apache.spark.streaming.twitter.TwitterUtils
+import org.joda.time.DateTime
 import twitter4j.Status
 
 /**
@@ -13,7 +14,7 @@ import twitter4j.Status
  * author:  Rotem
  */
 /** Simple application to listen to a stream of Tweets and print them out */
-object CountByUser extends BaseTwitterApp {
+object CountByUserCreationYear extends BaseTwitterApp {
 
   /** Our main function where the action happens */
   def main(args: Array[String]) {
@@ -26,9 +27,12 @@ object CountByUser extends BaseTwitterApp {
     // Create a DStream from Twitter using our streaming context
     val tweets: ReceiverInputDStream[Status] = TwitterUtils.createStream(ssc, None)
 
-    val totalByUser = tweets.map(_.getUser.getId).countByValueAndWindow(Minutes(1), Minutes(1))
+    val totalByUser = tweets.map(t => {
+      val createdAt = t.getUser.getCreatedAt
+      new DateTime(createdAt.getTime).year().get()
+    }).countByValueAndWindow(Seconds(10), Seconds(10))
 
-    totalByUser.print()
+    totalByUser.foreachRDD(rdd => rdd.take(30).foreach(r => logger.info("({}, {})", r._1, r._2)))
 
     // Kick it all off
     ssc.start()

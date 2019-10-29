@@ -15,6 +15,7 @@ import com.typesafe.config.ConfigFactory
 object Utilities {
 
   private final lazy val twitterConf = ConfigFactory.load().getConfig("twitter")
+
   /** Configures Twitter service credentials using twiter.txt in the main workspace directory */
   def setupTwitter(): Unit = {
     val iter = twitterConf.entrySet().iterator()

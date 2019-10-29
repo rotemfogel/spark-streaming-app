@@ -1,6 +1,5 @@
 package me.rotemfo.sparkstreaming
 
-import me.rotemfo.sparkstreaming.Utilities._
 import org.apache.spark.streaming.dstream.{DStream, ReceiverInputDStream}
 import org.apache.spark.streaming.twitter.TwitterUtils
 import twitter4j.Status
@@ -18,13 +17,9 @@ object PrintTweets extends BaseTwitterApp {
   /** Our main function where the action happens */
   def main(args: Array[String]) {
 
-    // Configure Twitter credentials using twitter.txt
-    setupTwitter()
-
     // Set up a Spark streaming context named "PrintTweets" that runs locally using
     // all CPU cores and one-second batches of data
     val ssc = getSparkStreamingContext()
-    ssc.checkpoint("checkpoint")
 
     // Create a DStream from Twitter using our streaming context
     val tweets: ReceiverInputDStream[Status] = TwitterUtils.createStream(ssc, None)

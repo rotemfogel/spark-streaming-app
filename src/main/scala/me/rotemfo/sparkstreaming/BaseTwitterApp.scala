@@ -1,8 +1,8 @@
 package me.rotemfo.sparkstreaming
 
 import me.rotemfo.sparkstreaming.Utilities.setupTwitter
-import org.apache.spark.internal.Logging
 import org.apache.spark.streaming.{Duration, Seconds, StreamingContext}
+import org.slf4j.{Logger, LoggerFactory}
 
 /**
  * project: spark-streaming-app
@@ -11,7 +11,8 @@ import org.apache.spark.streaming.{Duration, Seconds, StreamingContext}
  * created: 2019-10-27
  * author:  rotem
  */
-trait BaseTwitterApp extends Logging {
+trait BaseTwitterApp {
+  protected final val logger: Logger = LoggerFactory.getLogger(getClass)
   // Configure Twitter credentials using twitter.txt
   setupTwitter()
 

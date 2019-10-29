@@ -7,6 +7,8 @@ scalaVersion := "2.11.8"
 libraryDependencies ++= {
   val sparkVersion = "2.4.4"
   Seq(
+    "org.slf4j"         % "slf4j-api"        % "1.7.28",
+    "ch.qos.logback"    % "logback-classic"  % "1.2.3",
     "com.typesafe"      % "config"           % "1.4.0",
     "org.apache.spark" %% "spark-sql"        % sparkVersion, // % "provided",
     "org.apache.spark" %% "spark-streaming"  % sparkVersion, // % "provided",
