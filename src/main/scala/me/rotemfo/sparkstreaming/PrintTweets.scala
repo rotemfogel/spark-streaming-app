@@ -1,5 +1,6 @@
 package me.rotemfo.sparkstreaming
 
+import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.dstream.{DStream, ReceiverInputDStream}
 import org.apache.spark.streaming.twitter.TwitterUtils
 import twitter4j.Status
@@ -14,8 +15,7 @@ import twitter4j.Status
 /** Simple application to listen to a stream of Tweets and print them out */
 object PrintTweets extends BaseTwitterApp {
 
-  /** Our main function where the action happens */
-  def main(args: Array[String]) {
+  override protected def contextWork(): StreamingContext = {
 
     // Set up a Spark streaming context named "PrintTweets" that runs locally using
     // all CPU cores and one-second batches of data
@@ -30,8 +30,14 @@ object PrintTweets extends BaseTwitterApp {
     // Print out the first ten
     statuses.print()
 
+    ssc
+  }
+
+  def main(args: Array[String]) {
+    val context: StreamingContext = contextWork()
+
     // Kick it all off
-    ssc.start()
-    ssc.awaitTermination()
+    context.start()
+    context.awaitTermination()
   }
 }

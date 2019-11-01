@@ -1,8 +1,8 @@
 package me.rotemfo.sparkstreaming
 
-import org.apache.spark.streaming.Seconds
 import org.apache.spark.streaming.dstream.{DStream, ReceiverInputDStream}
 import org.apache.spark.streaming.twitter.TwitterUtils
+import org.apache.spark.streaming.{Seconds, StreamingContext}
 import twitter4j.Status
 
 /**
@@ -15,9 +15,7 @@ import twitter4j.Status
 /** Simple application to listen to a stream of Tweets and print them out */
 object PopularHashTags extends BaseTwitterApp {
 
-  /** Our main function where the action happens */
-  def main(args: Array[String]) {
-
+  override protected def contextWork(): StreamingContext = {
     val ssc = getSparkStreamingContext(duration = Seconds(5))
 
     // Create a DStream from Twitter using our streaming context
@@ -45,8 +43,16 @@ object PopularHashTags extends BaseTwitterApp {
     // Print the top 10
     sortedResults.print
 
+    ssc.checkpoint(checkpointDefaultDir)
+    ssc
+  }
+
+  /** Our main function where the action happens */
+  def main(args: Array[String]) {
+    val context: StreamingContext = contextWork()
+
     // Kick it all off
-    ssc.start()
-    ssc.awaitTermination()
+    context.start()
+    context.awaitTermination()
   }
 }
