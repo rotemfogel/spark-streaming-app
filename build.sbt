@@ -12,6 +12,7 @@ libraryDependencies ++= {
     "com.typesafe"      % "config"           % "1.4.0",
     "org.apache.spark" %% "spark-sql"        % sparkVersion, // % "provided",
     "org.apache.spark" %% "spark-streaming"  % sparkVersion, // % "provided",
-    "org.twitter4j"     % "twitter4j-stream" % "4.0.7"
+    "org.twitter4j" % "twitter4j-stream" % "4.0.7",
+    "org.joda" % "joda-convert" % "2.2.1"
   )
 }

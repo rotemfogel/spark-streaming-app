@@ -1,54 +1,57 @@
 package me.rotemfo.sparkstreaming
 
 import org.apache.spark.streaming._
+import org.apache.spark.streaming.dstream.ReceiverInputDStream
+import org.apache.spark.streaming.twitter.TwitterUtils
+import twitter4j.Status
 
+/**
+ * project: spark-streaming-app
+ * package: me.rotemfo.sparkstreaming
+ * file:    SaveTweets
+ * created: 2019-11-01
+ * author:  Rotem
+ */
 /** Listens to a stream of tweets and saves them to disk. */
 object SaveTweets extends BaseTwitterApp {
 
   override protected def contextWork(): StreamingContext = {
-    getSparkStreamingContext()
+    val ssc = getSparkStreamingContext(duration = Seconds(1))
+
+    // Create a DStream from Twitter using our streaming context
+    val tweets: ReceiverInputDStream[Status] = TwitterUtils.createStream(ssc, None)
+
+    // Now extract the text of each status update into RDD's using map()
+    val statuses = tweets.map(status => status.getText)
+
+    // Keep count of how many Tweets we've received so we can stop automatically
+    // (and not fill up your disk!)
+    var totalTweets: Long = 0
+
+    statuses.foreachRDD((rdd, time) => {
+      // Don't bother with empty batches
+      if (rdd.count() > 0) {
+        // Combine each partition's results into a single RDD:
+        val repartitionedRDD = rdd.coalesce(1).cache()
+        // And print out a directory with the results.
+        repartitionedRDD.saveAsTextFile("output/tweets_" + time.milliseconds.toString)
+        // Stop once we've collected 1000 tweets.
+        totalTweets += repartitionedRDD.count()
+        logger.info(s"Tweet count: $totalTweets")
+        if (totalTweets > 1000) {
+          System.exit(0)
+        }
+      }
+    })
+    ssc
   }
 
   /** Our main function where the action happens */
   def main(args: Array[String]) {
+    val context: StreamingContext = contextWork()
 
-    //    val ssc = getSparkStreamingContext(duration = Seconds(5))
-    //
-    //    // Create a DStream from Twitter using our streaming context
-    //    val tweets = TwitterUtils.createStream(ssc, None)
-    //
-    //    // Now extract the text of each status update into RDD's using map()
-    //    val statuses = tweets.map(status => status.getText)
-    //
-    //    // Here's one way to just dump every partition of every stream to individual files:
-    //    //statuses.saveAsTextFiles("Tweets", "txt")
-    //
-    //    // But let's do it the hard way to get a bit more control.
-    //
-    //    // Keep count of how many Tweets we've received so we can stop automatically
-    //    // (and not fill up your disk!)
-    //    var totalTweets: Long = 0
-    //
-    //    statuses.foreachRDD((rdd, time) => {
-    //      // Don't bother with empty batches
-    //      if (rdd.count() > 0) {
-    //        // Combine each partition's results into a single RDD:
-    //        val repartitionedRDD = rdd.repartition(1).cache()
-    //        // And print out a directory with the results.
-    //        repartitionedRDD.saveAsTextFile("Tweets_" + time.milliseconds.toString)
-    //        // Stop once we've collected 1000 tweets.
-    //        totalTweets += repartitionedRDD.count()
-    //        println("Tweet count: " + totalTweets)
-    //        if (totalTweets > 1000) {
-    //          System.exit(0)
-    //        }
-    //      }
-    //    })
-    //
-    //    // You can also write results into a database of your choosing, but we'll do that later.
-    //
-    //    // Set a checkpoint directory, and kick it all off
-    //    ssc.start()
-    //    ssc.awaitTermination()
+    // Kick it all off
+    context.start()
+    context.awaitTermination()
   }
 }
