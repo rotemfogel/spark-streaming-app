@@ -22,7 +22,6 @@ object CountByUserCreationYear extends BaseTwitterApp {
     // Set up a Spark streaming context named "PrintTweets" that runs locally using
     // all CPU cores and one-second batches of data
     val ssc = getSparkStreamingContext()
-    ssc.checkpoint("checkpoint")
 
     // Create a DStream from Twitter using our streaming context
     val tweets: ReceiverInputDStream[Status] = TwitterUtils.createStream(ssc, None)

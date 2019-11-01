@@ -18,9 +18,7 @@ object PopularHashTags extends BaseTwitterApp {
   /** Our main function where the action happens */
   def main(args: Array[String]) {
 
-    // Set up a Spark streaming context named "PrintTweets" that runs locally using
-    // all CPU cores and one-second batches of data
-    val ssc = getSparkStreamingContext()
+    val ssc = getSparkStreamingContext(duration = Seconds(5))
 
     // Create a DStream from Twitter using our streaming context
     val tweets: ReceiverInputDStream[Status] = TwitterUtils.createStream(ssc, None)
@@ -29,10 +27,10 @@ object PopularHashTags extends BaseTwitterApp {
       s.getHashtagEntities.map(_.getText) ++ s.getText.split(" ")
     })
 
-    // Now eliminate anything that's not a hashtag
-    val hashTags = words.filter(word => word.startsWith("#"))
+    // Now eliminate anything that's not a hashTag && remove pound sign
+    val hashTags = words.filter(word => word.startsWith("#")).map(_.substring(1))
 
-    // Map each hashtag to a key/value pair of (hashtag, 1) so we can count them up by adding up the values
+    // Map each hashTag to a key/value pair of (hashTag, 1) so we can count them up by adding up the values
     val hashTagsKeyValues = hashTags.map((_, 1))
 
     // Now count them up over a 5 minute window sliding every one second
@@ -48,7 +46,6 @@ object PopularHashTags extends BaseTwitterApp {
     sortedResults.print
 
     // Kick it all off
-    ssc.checkpoint("checkpoint")
     ssc.start()
     ssc.awaitTermination()
   }
