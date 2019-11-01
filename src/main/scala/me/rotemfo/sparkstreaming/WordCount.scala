@@ -21,8 +21,8 @@ object WordCount {
     // Count up the occurrence of each unique word
     val wordCounts = lowerCaseWords.countByValue()
 
-    // Print the first 20 results
-    val sample = wordCounts.take(20)
+    // Sort by value descending and print the first 20 results
+    val sample = wordCounts.toSeq.sortWith(_._2 > _._2).take(20)
 
     for ((word, count) <- sample) {
       println(word + " " + count)
