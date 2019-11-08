@@ -1,17 +1,10 @@
-package me.rotemfo.sparkstreaming
+package me.rotemfo.sparkstreaming.twitter
 
-import java.util.concurrent.atomic._
+import java.util.concurrent.atomic.AtomicLong
 
-import org.apache.spark.streaming._
-import org.apache.spark.streaming.twitter._
+import org.apache.spark.streaming.twitter.TwitterUtils
+import org.apache.spark.streaming.{Seconds, StreamingContext}
 
-/**
- * project: spark-streaming-app
- * package: me.rotemfo.sparkstreaming
- * file:    AverageTweetLength
- * created: 2019-11-02
- * author:  Rotem
- */
 /** Uses thread-safe counters to keep track of the average length of
  * Tweets in a stream.
  */

@@ -1,4 +1,4 @@
-package me.rotemfo.sparkstreaming
+package me.rotemfo.sparkstreaming.twitter
 
 import me.rotemfo.sparkstreaming.Utilities.setupTwitter
 import org.apache.spark.streaming.{Duration, Seconds, StreamingContext}

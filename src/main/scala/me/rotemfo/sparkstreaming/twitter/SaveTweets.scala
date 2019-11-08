@@ -1,17 +1,10 @@
-package me.rotemfo.sparkstreaming
+package me.rotemfo.sparkstreaming.twitter
 
-import org.apache.spark.streaming._
 import org.apache.spark.streaming.dstream.ReceiverInputDStream
 import org.apache.spark.streaming.twitter.TwitterUtils
+import org.apache.spark.streaming.{Seconds, StreamingContext}
 import twitter4j.Status
 
-/**
- * project: spark-streaming-app
- * package: me.rotemfo.sparkstreaming
- * file:    SaveTweets
- * created: 2019-11-01
- * author:  Rotem
- */
 /** Listens to a stream of tweets and saves them to disk. */
 object SaveTweets extends BaseTwitterApp {
 

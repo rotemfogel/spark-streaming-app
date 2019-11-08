@@ -1,17 +1,10 @@
-package me.rotemfo.sparkstreaming
+package me.rotemfo.sparkstreaming.twitter
 
 import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.dstream.{DStream, ReceiverInputDStream}
 import org.apache.spark.streaming.twitter.TwitterUtils
 import twitter4j.Status
 
-/**
- * project: spark-streaming-app
- * package: me.rotemfo.sparkstreaming
- * file:    PrintTweets
- * created: 2019-10-26
- * author:  Rotem
- */
 /** Simple application to listen to a stream of Tweets and print them out */
 object PrintTweets extends BaseTwitterApp {
 

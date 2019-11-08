@@ -1,17 +1,10 @@
-package me.rotemfo.sparkstreaming
+package me.rotemfo.sparkstreaming.twitter
 
 import org.apache.spark.streaming.dstream.{DStream, ReceiverInputDStream}
 import org.apache.spark.streaming.twitter.TwitterUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import twitter4j.Status
 
-/**
- * project: spark-streaming-app
- * package: me.rotemfo.sparkstreaming
- * file:    PopularHashTags
- * created: 2019-11-01
- * author:  Rotem
- */
 /** Simple application to listen to a stream of Tweets and print them out */
 object PopularHashTags extends BaseTwitterApp {
 
@@ -33,7 +26,7 @@ object PopularHashTags extends BaseTwitterApp {
     val hashTagsKeyValues = hashTags.map((_, 1))
 
     // Now count them up over a 5 minute window sliding every one second
-    val hashTagsCounts = hashTagsKeyValues.reduceByKeyAndWindow(_ + _, _ - _, Seconds(300), Seconds(30))
+    val hashTagsCounts = hashTagsKeyValues.reduceByKeyAndWindow(_ + _, _ - _, Seconds(300), Seconds(5))
 
     //  You will often see this written in the following shorthand:
 
