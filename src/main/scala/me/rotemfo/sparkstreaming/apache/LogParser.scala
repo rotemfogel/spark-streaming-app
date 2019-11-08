@@ -1,7 +1,8 @@
-package me.rotemfo.sparkstreaming
+package me.rotemfo.sparkstreaming.apache
 
 import java.util.regex.Matcher
 
+import me.rotemfo.sparkstreaming.Utilities
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.{Seconds, StreamingContext}
