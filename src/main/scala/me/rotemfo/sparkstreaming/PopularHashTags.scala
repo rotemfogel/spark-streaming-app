@@ -32,10 +32,9 @@ object PopularHashTags extends BaseTwitterApp {
     val hashTagsKeyValues = hashTags.map((_, 1))
 
     // Now count them up over a 5 minute window sliding every one second
-    val hashTagsCounts = hashTagsKeyValues.reduceByKeyAndWindow((x, y) => x + y, (x, y) => x - y, Seconds(300), Seconds(5))
+    val hashTagsCounts = hashTagsKeyValues.reduceByKeyAndWindow(_ + _, _ - _, Seconds(300), Seconds(5))
 
     //  You will often see this written in the following shorthand:
-    //val hashTagsCounts = hashtagKeyValues.reduceByKeyAndWindow( _ + _, _ -_, Seconds(300), Seconds(1))
 
     // Sort the results by the count values
     val sortedResults = hashTagsCounts.transform(rdd => rdd.sortBy(x => x._2, ascending = false))
