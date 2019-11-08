@@ -23,6 +23,7 @@ object PopularHashTags extends BaseTwitterApp {
 
     val words: DStream[String] = tweets.flatMap(s => {
       s.getHashtagEntities.map(_.getText) ++ s.getText.split(" ")
+        .flatMap(_.split(" "))
     })
 
     // Now eliminate anything that's not a hashTag && remove pound sign
@@ -32,7 +33,7 @@ object PopularHashTags extends BaseTwitterApp {
     val hashTagsKeyValues = hashTags.map((_, 1))
 
     // Now count them up over a 5 minute window sliding every one second
-    val hashTagsCounts = hashTagsKeyValues.reduceByKeyAndWindow(_ + _, _ - _, Seconds(300), Seconds(5))
+    val hashTagsCounts = hashTagsKeyValues.reduceByKeyAndWindow(_ + _, _ - _, Seconds(300), Seconds(30))
 
     //  You will often see this written in the following shorthand:
 
