@@ -1,8 +1,13 @@
 package me.rotemfo.sparkstreaming
 
-import java.util.regex.Pattern
+import java.sql.Timestamp
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.Locale
+import java.util.regex.{Matcher, Pattern}
 
 import com.typesafe.config.ConfigFactory
+import org.slf4j.{Logger, LoggerFactory}
 
 /**
  * project: spark-streaming-app
@@ -13,7 +18,7 @@ import com.typesafe.config.ConfigFactory
  */
 
 object Utilities {
-
+  private final val logger: Logger = LoggerFactory.getLogger(getClass)
   private final lazy val twitterConf = ConfigFactory.load().getConfig("twitter")
 
   /** Configures Twitter service credentials using twiter.txt in the main workspace directory */
@@ -41,4 +46,25 @@ object Utilities {
     val regex = s"$ip $client $user $dateTime $request $status $bytes $referer $agent"
     Pattern.compile(regex)
   }
+
+  final val datePattern = Pattern.compile("\\[(.*?) .+]")
+  final val dateFormatter: SimpleDateFormat = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss", Locale.ENGLISH)
+
+  def parseDateField(field: String): Option[Timestamp] = {
+    val dateMatcher: Matcher = datePattern.matcher(field)
+    if (dateMatcher.find()) {
+      val dateString = dateMatcher.group(1)
+      try {
+        val date = dateFormatter.parse(dateString)
+        Some(Timestamp.from(Instant.ofEpochSecond(date.getTime)))
+      } catch {
+        case e: Throwable =>
+          logger.error(s"error parsing date: $dateString", e)
+          None
+      }
+    }
+    else None
+  }
+
+  def now: Timestamp = Timestamp.from(Instant.now)
 }

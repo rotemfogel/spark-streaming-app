@@ -8,7 +8,6 @@
     <logger name="me.rotemfo" level="INFO"/>
     <logger name="org.apache.zookeeper" level="ERROR"/>
     <logger name="org.apache.kafka" level="ERROR"/>
-    <logger name="org.apache.spark.storage" level="ERROR"/>
 
     <root level="WARN">
         <appender-ref ref="STDOUT"/>
