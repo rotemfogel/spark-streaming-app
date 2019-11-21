@@ -8,6 +8,15 @@ import twitter4j.Status
 /** Listens to a stream of tweets and saves them to disk. */
 object SaveTweets extends BaseTwitterApp {
 
+  /** Our main function where the action happens */
+  def main(args: Array[String]) {
+    val context: StreamingContext = contextWork()
+
+    // Kick it all off
+    context.start()
+    context.awaitTermination()
+  }
+
   override protected def contextWork(): StreamingContext = {
     val ssc = getSparkStreamingContext(duration = Seconds(1))
 
@@ -37,14 +46,5 @@ object SaveTweets extends BaseTwitterApp {
       }
     })
     ssc
-  }
-
-  /** Our main function where the action happens */
-  def main(args: Array[String]) {
-    val context: StreamingContext = contextWork()
-
-    // Kick it all off
-    context.start()
-    context.awaitTermination()
   }
 }

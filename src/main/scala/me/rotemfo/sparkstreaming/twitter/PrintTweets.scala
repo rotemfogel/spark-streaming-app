@@ -8,6 +8,14 @@ import twitter4j.Status
 /** Simple application to listen to a stream of Tweets and print them out */
 object PrintTweets extends BaseTwitterApp {
 
+  def main(args: Array[String]) {
+    val context: StreamingContext = contextWork()
+
+    // Kick it all off
+    context.start()
+    context.awaitTermination()
+  }
+
   override protected def contextWork(): StreamingContext = {
 
     // Set up a Spark streaming context named "PrintTweets" that runs locally using
@@ -24,13 +32,5 @@ object PrintTweets extends BaseTwitterApp {
     statuses.print()
 
     ssc
-  }
-
-  def main(args: Array[String]) {
-    val context: StreamingContext = contextWork()
-
-    // Kick it all off
-    context.start()
-    context.awaitTermination()
   }
 }

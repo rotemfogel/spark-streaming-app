@@ -21,3 +21,5 @@ libraryDependencies ++= {
     "org.specs2"       %% "specs2-core"                % "4.6.0" % Test
   )
 }
+
+dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.7.1"

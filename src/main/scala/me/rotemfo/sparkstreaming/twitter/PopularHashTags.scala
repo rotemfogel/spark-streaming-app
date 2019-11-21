@@ -8,6 +8,15 @@ import twitter4j.Status
 /** Simple application to listen to a stream of Tweets and print them out */
 object PopularHashTags extends BaseTwitterApp {
 
+  /** Our main function where the action happens */
+  def main(args: Array[String]) {
+    val context: StreamingContext = contextWork()
+
+    // Kick it all off
+    context.start()
+    context.awaitTermination()
+  }
+
   override protected def contextWork(): StreamingContext = {
     val ssc = getSparkStreamingContext(duration = Seconds(5))
 
@@ -38,14 +47,5 @@ object PopularHashTags extends BaseTwitterApp {
 
     ssc.checkpoint(checkpointDefaultDir)
     ssc
-  }
-
-  /** Our main function where the action happens */
-  def main(args: Array[String]) {
-    val context: StreamingContext = contextWork()
-
-    // Kick it all off
-    context.start()
-    context.awaitTermination()
   }
 }

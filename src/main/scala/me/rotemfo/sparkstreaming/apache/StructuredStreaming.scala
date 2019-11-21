@@ -18,33 +18,6 @@ import org.slf4j.{Logger, LoggerFactory}
 object StructuredStreaming {
   private final val logger: Logger = LoggerFactory.getLogger(getClass)
 
-  case class LogEntry(ip: String,
-                      client: String,
-                      user: String,
-                      dateTime: Timestamp,
-                      request: String,
-                      status: Int,
-                      bytes: String,
-                      referrer: String,
-                      agent: String)
-
-  private def parseLog(x: Row): Option[LogEntry] = {
-    val matcher: Matcher = logPattern.matcher(x.getString(0))
-    if (matcher.matches)
-      Some(LogEntry(
-        matcher.group(1),
-        matcher.group(2),
-        matcher.group(3),
-        Utilities.parseDateField(matcher.group(4)).getOrElse(Utilities.now),
-        matcher.group(5),
-        matcher.group(6).toInt,
-        matcher.group(7),
-        matcher.group(8),
-        matcher.group(9)
-      ))
-    else None
-  }
-
   def main(args: Array[String]): Unit = {
     val spark = SparkSession.builder()
       .appName("StructuredStreaming")
@@ -64,4 +37,31 @@ object StructuredStreaming {
     query.awaitTermination()
     spark.close()
   }
+
+  private def parseLog(x: Row): Option[LogEntry] = {
+    val matcher: Matcher = logPattern.matcher(x.getString(0))
+    if (matcher.matches)
+      Some(LogEntry(
+        matcher.group(1),
+        matcher.group(2),
+        matcher.group(3),
+        Utilities.parseDateField(matcher.group(4)).getOrElse(Utilities.now),
+        matcher.group(5),
+        matcher.group(6).toInt,
+        matcher.group(7),
+        matcher.group(8),
+        matcher.group(9)
+      ))
+    else None
+  }
+
+  case class LogEntry(ip: String,
+                      client: String,
+                      user: String,
+                      dateTime: Timestamp,
+                      request: String,
+                      status: Int,
+                      bytes: String,
+                      referrer: String,
+                      agent: String)
 }

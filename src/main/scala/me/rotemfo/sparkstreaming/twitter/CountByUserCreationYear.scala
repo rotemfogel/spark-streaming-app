@@ -9,6 +9,15 @@ import twitter4j.Status
 /** Simple application to listen to a stream of Tweets and print them out */
 object CountByUserCreationYear extends BaseTwitterApp {
 
+  /** Our main function where the action happens */
+  def main(args: Array[String]) {
+    val context: StreamingContext = contextWork()
+
+    // Kick it all off
+    context.start()
+    context.awaitTermination()
+  }
+
   override protected def contextWork(): StreamingContext = {
     // Set up a Spark streaming context named "PrintTweets" that runs locally using
     // all CPU cores and one-second batches of data
@@ -25,14 +34,5 @@ object CountByUserCreationYear extends BaseTwitterApp {
     totalByUser.foreachRDD(rdd => rdd.take(30).foreach(r => logger.info("({}, {})", r._1, r._2)))
     ssc.checkpoint(checkpointDefaultDir)
     ssc
-  }
-
-  /** Our main function where the action happens */
-  def main(args: Array[String]) {
-    val context: StreamingContext = contextWork()
-
-    // Kick it all off
-    context.start()
-    context.awaitTermination()
   }
 }

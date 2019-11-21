@@ -10,6 +10,14 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
  */
 object AverageTweetLength extends BaseTwitterApp {
 
+  /** Our main function where the action happens */
+  def main(args: Array[String]) {
+
+    val context = contextWork()
+    context.start()
+    context.awaitTermination()
+  }
+
   override protected def contextWork(): StreamingContext = {
     // Set up a Spark streaming context named "AverageTweetLength" that runs locally using
     // all CPU cores and one-second batches of data
@@ -51,13 +59,5 @@ object AverageTweetLength extends BaseTwitterApp {
     // I could watch this all day!
     ssc.checkpoint(checkpointDefaultDir)
     ssc
-  }
-
-  /** Our main function where the action happens */
-  def main(args: Array[String]) {
-
-    val context = contextWork()
-    context.start()
-    context.awaitTermination()
   }
 }

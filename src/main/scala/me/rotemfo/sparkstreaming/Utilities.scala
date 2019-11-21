@@ -18,8 +18,10 @@ import org.slf4j.{Logger, LoggerFactory}
  */
 
 object Utilities {
-  private final val logger: Logger = LoggerFactory.getLogger(getClass)
   private final lazy val twitterConf = ConfigFactory.load().getConfig("twitter")
+  final val datePattern = Pattern.compile("\\[(.*?) .+]")
+  final val dateFormatter: SimpleDateFormat = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss", Locale.ENGLISH)
+  private final val logger: Logger = LoggerFactory.getLogger(getClass)
 
   /** Configures Twitter service credentials using twiter.txt in the main workspace directory */
   def setupTwitter(): Unit = {
@@ -46,9 +48,6 @@ object Utilities {
     val regex = s"$ip $client $user $dateTime $request $status $bytes $referer $agent"
     Pattern.compile(regex)
   }
-
-  final val datePattern = Pattern.compile("\\[(.*?) .+]")
-  final val dateFormatter: SimpleDateFormat = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss", Locale.ENGLISH)
 
   def parseDateField(field: String): Option[Timestamp] = {
     val dateMatcher: Matcher = datePattern.matcher(field)
