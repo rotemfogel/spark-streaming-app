@@ -7,7 +7,7 @@ import java.util.Locale
 import java.util.regex.{Matcher, Pattern}
 
 import com.typesafe.config.ConfigFactory
-import org.slf4j.{Logger, LoggerFactory}
+import me.rotemfo.common.Logging
 
 /**
  * project: spark-streaming-app
@@ -17,11 +17,10 @@ import org.slf4j.{Logger, LoggerFactory}
  * author:  Rotem
  */
 
-object Utilities {
+object Utilities extends Logging {
   private final lazy val twitterConf = ConfigFactory.load().getConfig("twitter")
   final val datePattern = Pattern.compile("\\[(.*?) .+]")
   final val dateFormatter: SimpleDateFormat = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss", Locale.ENGLISH)
-  private final val logger: Logger = LoggerFactory.getLogger(getClass)
 
   /** Configures Twitter service credentials using twiter.txt in the main workspace directory */
   def setupTwitter(): Unit = {

@@ -6,7 +6,6 @@ import java.util.regex.Matcher
 import me.rotemfo.sparkstreaming.Utilities
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
-import org.slf4j.{Logger, LoggerFactory}
 
 /**
  * project: spark-streaming-app
@@ -16,7 +15,6 @@ import org.slf4j.{Logger, LoggerFactory}
  * author:  Rotem
  */
 object StructuredStreaming {
-  private final val logger: Logger = LoggerFactory.getLogger(getClass)
 
   def main(args: Array[String]): Unit = {
     val spark = SparkSession.builder()
@@ -64,4 +62,5 @@ object StructuredStreaming {
                       bytes: String,
                       referrer: String,
                       agent: String)
+
 }

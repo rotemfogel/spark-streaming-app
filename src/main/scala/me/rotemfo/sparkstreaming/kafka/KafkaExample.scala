@@ -1,4 +1,4 @@
-package me.rotemfo.sparkstreaming
+package me.rotemfo.sparkstreaming.kafka
 
 import java.util.regex.Matcher
 
@@ -33,7 +33,8 @@ object KafkaExample {
       "bootstrap.servers" -> "localhost:9092",
       "key.deserializer" -> "org.apache.kafka.common.serialization.StringDeserializer",
       "value.deserializer" -> "org.apache.kafka.common.serialization.StringDeserializer",
-      "group.id" -> app
+      "group.id" -> app,
+      "receive.buffer.bytes" -> "65536"
     )
     // List of topics you want to listen for from Kafka
     val topics = Set("logs")

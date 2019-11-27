@@ -35,7 +35,7 @@ object AverageTweetLength extends BaseTwitterApp {
     // As we could have multiple processes adding into these running totals
     // at the same time, we'll just Java's AtomicLong class to make sure
     // these counters are thread-safe.
-    var totalTweets = new AtomicLong(0)
+    val totalTweets = new AtomicLong(0)
     var totalChars = new AtomicLong(0)
 
     // In Spark 1.6+, you  might also look into the mapWithState function, which allows
@@ -44,7 +44,7 @@ object AverageTweetLength extends BaseTwitterApp {
 
     lengths.foreachRDD((rdd, _) => {
 
-      var count = rdd.count()
+      val count = rdd.count()
       if (count > 0) {
         totalTweets.getAndAdd(count)
         totalChars.getAndAdd(rdd.reduce(_ + _))

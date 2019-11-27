@@ -2,6 +2,7 @@ package me.rotemfo.sparkstreaming.apache
 
 import java.util.regex.Matcher
 
+import me.rotemfo.common.Logging
 import me.rotemfo.sparkstreaming.Utilities.apacheLogPattern
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming.{Seconds, StreamingContext}
@@ -14,7 +15,7 @@ object Result extends Enumeration {
   val SUCCESS, FAILURE, OTHER = Value
 }
 
-object LogAlarmer {
+object LogAlarmer extends Logging {
 
   def main(args: Array[String]) {
 
@@ -50,7 +51,7 @@ object LogAlarmer {
     val statusCounts = successFailure.countByValueAndWindow(Seconds(300), Seconds(1))
 
     // For each batch, get the RDD's representing data from our current window
-    statusCounts.foreachRDD((rdd, time) => {
+    statusCounts.foreachRDD((rdd, _) => {
       // Keep track of total success and error codes from each RDD
       var totalSuccess: Long = 0
       var totalError: Long = 0
@@ -70,7 +71,7 @@ object LogAlarmer {
       }
 
       // Print totals from current window
-      println("Total success: " + totalSuccess + " Total failure: " + totalError)
+      logger.info("Total success: " + totalSuccess + " Total failure: " + totalError)
 
       // Don't alarm unless we have some minimum amount of data to work with
       if (totalError + totalSuccess > 100) {
@@ -82,9 +83,9 @@ object LogAlarmer {
           // In real life, you'd use JavaMail or Scala's courier library to send an
           // email that causes somebody's phone to make annoying noises, and you'd
           // make sure these alarms are only sent at most every half hour or something.
-          println("Wake somebody up! Something is horribly wrong.")
+          logger.info("Wake somebody up! Something is horribly wrong.")
         } else {
-          println("All systems go.")
+          logger.info("All systems go.")
         }
       }
     })

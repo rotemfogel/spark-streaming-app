@@ -1,11 +1,12 @@
 package me.rotemfo.sparkstreaming
 
+import me.rotemfo.common.Logging
 import org.apache.spark.sql.SparkSession
 
 /** Create a RDD of lines from a text file, and keep count of
  * how often each word appears.
  */
-object WordCount {
+object WordCount extends Logging {
 
   def main(args: Array[String]) {
     val spark = SparkSession.builder().appName("WordCount").master("local[*]").getOrCreate()
@@ -25,7 +26,7 @@ object WordCount {
     val sample = wordCounts.toSeq.sortWith(_._2 > _._2).take(20)
 
     for ((word, count) <- sample) {
-      println(word + " " + count)
+      logger.info(word + " " + count)
     }
 
     spark.stop()

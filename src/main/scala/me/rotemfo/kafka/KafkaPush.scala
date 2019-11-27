@@ -3,10 +3,10 @@ package me.rotemfo.kafka
 import java.util.concurrent.atomic.AtomicLong
 
 import kafka.zk.{AdminZkClient, KafkaZkClient}
+import me.rotemfo.common.Logging
 import org.apache.kafka.clients.producer.{Callback, KafkaProducer, ProducerRecord, RecordMetadata}
 import org.apache.kafka.common.security.JaasUtils
 import org.apache.kafka.common.utils.Time
-import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
@@ -19,8 +19,7 @@ import scala.util.Try
  * created: 2019-11-20
  * author:  Rotem
  */
-object KafkaPush {
-  private final val logger: Logger = LoggerFactory.getLogger(getClass)
+object KafkaPush extends Logging {
   private final val topic: String = "logs"
 
   def main(args: Array[String]): Unit = {

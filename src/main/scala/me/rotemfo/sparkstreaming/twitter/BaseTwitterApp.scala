@@ -1,8 +1,8 @@
 package me.rotemfo.sparkstreaming.twitter
 
+import me.rotemfo.common.Logging
 import me.rotemfo.sparkstreaming.Utilities.setupTwitter
 import org.apache.spark.streaming.{Duration, Seconds, StreamingContext}
-import org.slf4j.{Logger, LoggerFactory}
 
 /**
  * project: spark-streaming-app
@@ -11,8 +11,7 @@ import org.slf4j.{Logger, LoggerFactory}
  * created: 2019-10-27
  * author:  rotem
  */
-trait BaseTwitterApp {
-  protected final val logger: Logger = LoggerFactory.getLogger(getClass)
+trait BaseTwitterApp extends Logging {
   protected final val appName: String = getClass.getSimpleName.replaceAll("\\$", "")
   protected final val checkpointDefaultDir: String = s"checkpoint/$appName"
 
