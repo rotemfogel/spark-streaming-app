@@ -1,6 +1,6 @@
 // Custom receiver docs at http://spark.apache.org/docs/latest/streaming-custom-receivers.html
 
-package me.rotemfo.sparkstreaming
+package me.rotemfo.sparkstreaming.custom
 
 import java.io.{BufferedReader, InputStreamReader}
 import java.net.Socket

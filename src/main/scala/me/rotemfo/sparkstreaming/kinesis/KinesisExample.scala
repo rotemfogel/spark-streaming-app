@@ -2,57 +2,56 @@
 
 package me.rotemfo.sparkstreaming.kinesis
 
-import java.util.regex.Matcher
+import java.util.Date
 
-import com.amazonaws.services.kinesis.clientlibrary.lib.worker.InitialPositionInStream
-import me.rotemfo.sparkstreaming.Utilities
+import com.amazonaws.services.kinesis.model.Record
+import me.rotemfo.common.Logging
+import org.apache.spark.sql.catalyst.util.DateTimeUtils
 import org.apache.spark.storage.StorageLevel
+import org.apache.spark.streaming.kinesis.KinesisInitialPositions.TrimHorizon
 import org.apache.spark.streaming.kinesis._
 import org.apache.spark.streaming.{Duration, Seconds, StreamingContext}
 
-/** Example of connecting to Amazon Kinesis Streaming and listening for log data. */
-object KinesisExample {
+object KinesisExample extends Logging {
+
+  case class MyData(partitionKey: String, seqNumber: String, timeOfArrival: Date, data: Array[Byte])
+
+  private final val regionName: String = "us-west-2"
+  private final val endpointURL: String = s"kinesis.$regionName.amazonaws.com"
+  private final val appName: String = "KinesisExample"
+  private final val streamName: String = "production-events"
+
+  private def millis(seconds: Int): Long = seconds * DateTimeUtils.MILLIS_PER_SECOND
+
+  private def messageHandler(r: Record): MyData = {
+    MyData(r.getPartitionKey,
+      r.getSequenceNumber,
+      r.getApproximateArrivalTimestamp,
+      r.getData.array()
+    )
+  }
 
   def main(args: Array[String]) {
 
     // Create the context with a 1 second batch size
-    val ssc = new StreamingContext("local[*]", "KinesisExample", Seconds(1))
+    val streamingContext = new StreamingContext("local[*]", appName, Seconds(5))
 
+    val kinesisStream = KinesisInputDStream
+      .builder
+      .streamingContext(streamingContext)
+      .endpointUrl(endpointURL)
+      .regionName(regionName)
+      .streamName(streamName)
+      .initialPosition(new TrimHorizon)
+      .checkpointAppName(appName)
+      .checkpointInterval(Duration(millis(60)))
+      .storageLevel(StorageLevel.MEMORY_AND_DISK_2)
+      .buildWithMessageHandler(messageHandler)
+
+    kinesisStream.map(m => logger.info(s"$m"))
     // Construct a regular expression (regex) to extract fields from raw Apache log lines
-    val pattern = Utilities.apacheLogPattern()
-
-    // Create a Kinesis stream. You must create an app name unique for this region, and specify
-    // stream name, Kinesis endpoint, and region you want. 
-    val kinesisStream = KinesisUtils.createStream(
-      ssc, "Unique App Name", "Stream Name", "kinesis.us-east-1.amazonaws.com",
-      "us-east-1", InitialPositionInStream.LATEST, Duration(2000), StorageLevel.MEMORY_AND_DISK_2)
-
-    // This gives you a byte array for each message. Let's assume these represent strings.
-    val lines = kinesisStream.map(x => new String(x))
-
-    // Extract the request field from each log line
-    val requests = lines.map(x => {
-      val matcher: Matcher = pattern.matcher(x)
-      if (matcher.matches()) matcher.group(5)
-    })
-
-    // Extract the URL from the request
-    val urls = requests.map(x => {
-      val arr = x.toString.split(" ")
-      if (arr.size == 3) arr(1) else "[error]"
-    })
-
-    // Reduce by URL over a 5-minute window sliding every second
-    val urlCounts = urls.map(x => (x, 1)).reduceByKeyAndWindow(_ + _, _ - _, Seconds(300), Seconds(1))
-
-    // Sort and print the results
-    val sortedResults = urlCounts.transform(rdd => rdd.sortBy(x => x._2, ascending = false))
-    sortedResults.print()
-
-    // Kick it off
-    ssc.checkpoint("C:/checkpoint/")
-    ssc.start()
-    ssc.awaitTermination()
+    streamingContext.start()
+    streamingContext.awaitTermination()
   }
 }
 

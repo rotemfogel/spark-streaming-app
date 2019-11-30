@@ -1,11 +1,9 @@
-
-package me.rotemfo.sparkstreaming
+package me.rotemfo.sparkstreaming.cassandra
 
 import java.util.regex.Matcher
 
-import com.datastax.spark.connector._
 import me.rotemfo.common.Logging
-import me.rotemfo.sparkstreaming.Utilities._
+import me.rotemfo.sparkstreaming.Utilities.apacheLogPattern
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.dstream.InputDStream
@@ -60,6 +58,8 @@ object CassandraExample extends Logging {
       }
     })
 
+    import com.datastax.spark.connector._
+
     // Now store it in Cassandra
     requests.foreachRDD((rdd, _) => {
       rdd.cache()
@@ -73,4 +73,3 @@ object CassandraExample extends Logging {
     ssc.awaitTermination()
   }
 }
-
